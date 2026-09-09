@@ -1,31 +1,19 @@
-FROM python:3.12-slim
+# استخدم الصورة الرسمية للمشروع أو قم ببنائها من المصدر
+FROM acheong08/chatgpt-to-api:latest
 
-# تثبيت المتطلبات الأساسية و Chrome
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+# أو يمكنك بناء الصورة من الكود المصدري:
+# FROM golang:alpine AS builder
+# WORKDIR /app
+# COPY go.mod go.sum ./
+# RUN go mod download
+# COPY . .
+# RUN go build -o freechatgpt .
+# 
+# FROM alpine
+# WORKDIR /app
+# COPY --from=builder /app/freechatgpt .
+# EXPOSE 8080
+# CMD ["./freechatgpt"]
 
-# تثبيت Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y google-chrome-stable
-
-WORKDIR /app
-
-# نسخ ملف المتطلبات
-COPY requirements.txt .
-
-# تثبيت الحزم المطلوبة
-RUN pip install --no-cache-dir -r requirements.txt
-
-# نسخ سكربت التشغيل
-COPY start.sh .
-RUN chmod +x start.sh
-
-# تحديد المنفذ
-EXPOSE $PORT
-
-# أمر التشغيل
-CMD ["bash", "start.sh"]
+# في حالة استخدام الصورة الجاهزة، الأمر التالي كافٍ:
+CMD ["./freechatgpt"]
