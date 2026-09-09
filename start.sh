@@ -1,2 +1,2 @@
 #!/bin/bash
-web2api --host 0.0.0.0 --port $PORT
+web2api serve --port $PORT
