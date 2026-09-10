@@ -1,18 +1,22 @@
-# استخدم الصورة الرسمية للمشروع أو قم ببنائها من المصدر
-FROM acheong08/chatgpt-to-api:latest
+FROM golang:alpine AS builder
 
-# أو يمكنك بناء الصورة من الكود المصدري:
-# FROM golang:alpine AS builder
-# WORKDIR /app
-# COPY go.mod go.sum ./
-# RUN go mod download
-# COPY . .
-# RUN go build -o freechatgpt .
-# 
-# FROM alpine
-# WORKDIR /app
-# COPY --from=builder /app/freechatgpt .
-# EXPOSE 8080
-# CMD ["./freechatgpt"]
+RUN apk add --no-cache git
 
-# في حالة استخدام الصورة الجاهزة، لا حاجة لتحديد CMD، سيتم استخدام الافتراضي من الصورة الأساسية.
+WORKDIR /app
+
+RUN git clone https://github.com/xqdoo00o/ChatGPT-to-API.git .
+
+RUN go mod download
+RUN go build -o chatgpt-to-api .
+
+FROM alpine:latest
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /app/chatgpt-to-api .
+
+EXPOSE 8080
+
+CMD ["./chatgpt-to-api"]
