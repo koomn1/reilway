@@ -1,7 +1,8 @@
 FROM node:20-alpine
 
-# تثبيت المتطلبات
+# تثبيت المتطلبات + git
 RUN apk add --no-cache \
+    git \
     chromium \
     nss \
     freetype \
