@@ -1,22 +1,28 @@
-FROM golang:alpine AS builder
+FROM node:20-alpine
 
-RUN apk add --no-cache git
+# تثبيت المتطلبات
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# تعيين متغيرات Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 WORKDIR /app
 
-RUN git clone https://github.com/xqdoo00o/ChatGPT-to-API.git .
+# استنساخ المشروع
+RUN git clone https://github.com/leiurayer/chat2api.git .
 
-RUN go mod download
-RUN go build -o chatgpt-to-api .
+# تثبيت المكتبات
+RUN npm install
 
-FROM alpine:latest
-
-RUN apk add --no-cache ca-certificates
-
-WORKDIR /app
-
-COPY --from=builder /app/chatgpt-to-api .
-
+# تعيين المنفذ
 EXPOSE 8080
 
-CMD ["./chatgpt-to-api"]
+# أمر التشغيل
+CMD ["node", "index.js"]
